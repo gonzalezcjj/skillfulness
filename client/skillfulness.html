@@ -1,0 +1,174 @@
+<head>
+    <title>Skillfulness</title>
+</head>
+
+<body>
+</body>
+
+<template name="ApplicationLayout">
+    {{> yield "navbar"}}
+    <div class="container">
+        {{> yield "main"}}
+    </div>
+</template>
+
+<template name="navbar">
+    <!-- navbar  - you will be putting the login functions here -->
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                Skillfulness
+            </a>
+            {{#if loggedUser}}
+                <a class="btn btn-default navbar-btn btn-success" href="/addbooking">
+                    <span>Add Booking <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></span>
+                </a>
+            {{/if}}
+            <p class="navbar-text navbar-right">
+                {{> loginButtons align="right"}}
+            </p>
+        </div>
+    </nav>
+</template>
+
+<template name="booking_form">
+    {{#if loggedUser}}
+        <h1>Booking: </h1>
+        <div class="hidden_div" id="getInfo">
+            <div class="form-group">
+                <label for="date">Type date:</label>
+                <input type="text" class="form-control js-try-url" id="date" placeholder="MM/DD/YYYY">
+                <p id="notification" class="hidden_div">You type date. It mast have MM/DD/YYY valid format
+                    url.</p>
+                <br>
+                <button id="getInfoButton" class="form-control btn btn-primary js-try-get-site-info"
+                        disabled="disabled">Try to extract info from given site url
+                </button>
+            </div>
+        </div>
+
+        {{#each providerInfos}}
+            {{>provider_info}}
+        {{/each}}
+    {{/if}}
+</template>
+
+<template name="provider_info">
+    <div id="provider_form" class="">
+        <form class="js-save-website-form">
+            <div class="form-group">
+                <label for="url">Site address</label>
+                <input type="text" value="{{url}}" class="form-control" id="url"
+                       placeholder="http://www.mysite.com">
+            </div>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" value="{{title}}" class="form-control" id="title" placeholder="Mysite">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" value="{{description}}" class="form-control" id="description"
+                       placeholder="I found this site really useful for ...">
+            </div>
+
+            <button type="submit" class="btn btn-default btn-success">Booking</button>
+        </form>
+    </div>
+</template>
+
+<template name="website_post_form">
+    {{#if loggedUser}}
+        <button class="btn btn-info js-toggle-website-post-form">add post</button>
+        <div id="website_post_form" class="hidden_div">
+            <form class="js-save-website-post-form">
+                <div class="form-group">
+                    <label for="post_title">Title</label>
+                    <input type="text" class="form-control" id="post_title" placeholder="My post title">
+                </div>
+                <div class="form-group">
+                    <label for="post_content">Text</label>
+                    <input type="text" class="form-control" id="post_content" placeholder="my message">
+                </div>
+
+                <button type="submit" class="btn btn-default btn-success">Submit</button>
+            </form>
+        </div>
+    {{/if}}
+</template>
+
+<!-- template that displays several skill items -->
+<template name="skill_list">
+    {{>search}}
+    <div class="hidden_div" id="items">
+        <ol class="list-group">
+            {{#each skills}}
+                {{>skill_item}}
+            {{/each}}
+        </ol>
+    </div>
+</template>
+
+<template name="skill_details">
+    <a href="/"><span class="btn btn-default">Back</span></a>
+    <h1><a href="{{url}}">{{title}}</a></h1>
+    <p>
+        {{description}}
+    </p>
+    <p>Provide by {{getUserName user}} on: {{createdOn}}</p>
+    <p>Rating: <span class="badge">{{getRatings}}</span></p>
+    {{>rating_post_form}}
+
+    {{#if hasPosts}}
+        <h2>Posts:</h2>
+        {{#each posts}}
+            {{>post_item}}
+        {{/each}}
+    {{/if}}
+
+</template>
+
+<template name="post_item">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Title: {{title}}</h3>
+        </div>
+        <div class="panel-body">
+            {{content}}
+        </div>
+        <div class="panel-footer">
+            <div class="row">
+                <span class="col-xs-6 col-lg-6">Author: {{getUserName user}}</span>
+                <span class="col-xs-6 col-lg-6 text-right">Created on: {{createdOn}}</span>
+            </div>
+        </div>
+    </div>
+</template>
+<!-- template that displays individual website entries -->
+<template name="website_item">
+    <li class="list-group-item">
+        <h1><a href="{{url}}">{{title}}</a></h1>
+        <p>
+            {{description}}
+        </p>
+        <p>Created by {{getUserName user}} on: {{createdOn}}</p>
+        <p>Votes: <span class="badge">{{getVotes}}</span></p>
+        <a href="#" class="btn btn-default js-upvote">
+            <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+        </a>
+        <a href="#" class="btn btn-default js-downvote">
+            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+        </a>
+        <!-- you will be putting your up and down vote buttons in here! -->
+        <a href="/website/{{_id}}" class="btn btn-info">Details</a>
+    </li>
+</template>
+
+<template name="search">
+
+    <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1">Search</span>
+        <input type="text" class="form-control js-set-website-filter" name="keyword" placeholder="keyword"
+               aria-describedby="basic-addon1">
+    </div>
+    <br>
+</template>
