@@ -27,12 +27,18 @@ function cleanUpProviderInfo() {
     }
 }
 
+function isValidPhone(phone) {
+    var regexQuery = "^([0-9]{11,11})?$";
+    var phoneregex = new RegExp(regexQuery, "i");
+    return phoneregex.test(phone);
+}
+
 /////
 // template helpers
 /////
 
 Template.search.events({
-    'keyup .js-set-skill-filter': function (event) {
+    'keyup .js-set-provider-filter': function (event) {
         Session.set("searchValue", event.currentTarget.value);
     }
 });
@@ -48,27 +54,28 @@ Template.provider_list.helpers({
         Meteor.subscribe("search", Session.get("searchValue"));
 
         if (Session.get("searchValue")) {// they set a filter!
-            return Skills.find({}, {sort: [["score", "desc"]]});
+            return Provider.find({}, {sort: [["rating", "desc"]]});
         }
         else {
-            return Skills.find({}, {sort: {rating: -1}});
+            return Provider.find({}, {sort: {rating: -1}});
         }
     }
 });
 
-Template.skill_form.rendered = function () {
-    cleanUpSkillInfo();
+Template.provider_form.rendered = function () {
+    cleanUpProviderInfo();
     $("#getInfo").toggle('slow');
+    $("#tryPhone").focus();
 };
 
-Template.skill_form.helpers({
+Template.provider_form.helpers({
     loggedUser: function () {
         return isLogged();
     },
-    skillInfos: function () {
+    providerInfos: function () {
         var userId = Meteor.userId();
-        Meteor.subscribe("latestSkillInfo", userId);
-        return SkillInfos.find({}, {sort: {createdOn: -1}, limit: 1});
+        Meteor.subscribe("latestproviderInfo", userId);
+        return ProviderInfos.find({}, {sort: {createdOn: -1}, limit: 1});
     }
 });
 
@@ -78,7 +85,7 @@ Template.navbar.helpers({
     },
 });
 
-Template.skill_item.helpers({
+Template.provider_item.helpers({
     getUserName: function (userId) {
         return getUserName(userId);
     },
@@ -87,24 +94,24 @@ Template.skill_item.helpers({
     }
 });
 
-Template.post_item.helpers({
+Template.working_item.helpers({
     getUserName: function (userId) {
         return getUserName(userId);
     },
 });
 
-Template.skill_post_form.helpers({
+Template.provider_rating_form.helpers({
     loggedUser: function () {
         return isLogged();
     },
 });
 
-Template.skill_details.helpers({
+Template.provider_details.helpers({
     getUserName: function (userId) {
         return getUserName(userId);
     },
-    working: function () {
-        Meteor.subscribe("working", this._id);
+    workings: function () {
+        Meteor.subscribe("workings", this._id);
         return Posts.find({providerId: this._id}, {sort: {createdOn: -1}});
     },
     rating: function () {
@@ -121,7 +128,7 @@ Template.skill_details.helpers({
 /////
 
 Template.provider_item.events({
-    "click .js-upvote": function (event) {
+    "click .js-uprating": function (event) {
         // example of how you can access the id for the provider in the database
         // (this is the data context for the template)
         var provider_id = this._id;
@@ -129,12 +136,12 @@ Template.provider_item.events({
         Meteor.call("provider.rating", {providerId: provider_id, rating: 1})
         return false;// prevent the button from reloading the page
     },
-    "click .js-downvote": function (event) {
+    "click .js-downrating": function (event) {
 
         // example of how you can access the id for the provider in the database
         // (this is the data context for the template)
         var provider_id = this._id;
-        Meteor.call("website.rating", {providerId: provider_id, rating: -1});
+        Meteor.call("provider.rating", {providerId: provider_id, rating: -1});
 
         // put the code in here to remove a rating from a provider!
 
@@ -176,3 +183,10 @@ Template.booking_rating_form.events({
 Template.booking_rating_form.rendered = function () {
     $('#rating_title').focus();
 };
+
+// Date input
+Template.myTemplate.rendered = function(){
+     $('.datetimepicker').each(function(){
+           $(this).datetimepicker(); 
+     });
+}
