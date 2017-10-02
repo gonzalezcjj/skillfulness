@@ -57,29 +57,5 @@ Meteor.methods({
             providerId: providerId
         });
     },
-/*    'httpGetSiteInfo': function ({url, userId}) {
-        check(url, String);
-        check(userId, String);
-        this.unblock();
-        try {
-            var result = HTTP.call("GET", url);
-            var status = result.statusCode;
-            console.log("status: " + status);
-            if (status === 200) {
-                $ = cheerio.load(result.content);
-                var result = {
-                    "userId": userId,
-                    "url": url,
-                    "status": status,
-                    "title": $("title").text(),
-                    "createdOn": new Date(),
-                    "description": $("meta[name='description']").attr("content")
-                };
-                SiteInfos.insert(result);
-            }
-        } catch (e) {
-            // Got a network error, time-out or HTTP error in the 400 or 500 range.
-            console.log("Error: " + e);
-        }
-    },*/
+
 });
